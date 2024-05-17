@@ -96,7 +96,6 @@ export default {
       errorMessage: '',
       playerId: 0,
       playerName: '',
-      // isEdit: false,
 
       playerDetails: {
         playerName: '',

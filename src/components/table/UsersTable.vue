@@ -77,6 +77,7 @@ export default {
           })
     },
 
+
     openDeleteUserModal(userId, username) {
       this.selectedUser.userId = userId
       this.selectedUser.username = username

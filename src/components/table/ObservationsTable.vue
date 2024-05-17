@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <PlayerDetailsModal ref="playerDetailsModalRef" @update-users-table="sendGetUsersRequest"/>
     <PlayerObservationModal ref="playerObservationModalRef"/>
     <div class="row">
       <div class="col-10 mx-auto">
@@ -35,10 +36,11 @@
 
 import PlayerObservationModal from "@/components/modal/PlayerObservationModal.vue";
 import router from "@/router";
+import PlayerDetailsModal from "@/components/modal/PlayerDetailsModal.vue";
 
 export default {
   name: "ObservationsTable",
-  components: {PlayerObservationModal},
+  components: {PlayerDetailsModal, PlayerObservationModal},
 
 
   data() {

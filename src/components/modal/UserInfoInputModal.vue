@@ -5,6 +5,8 @@
       Add new user
     </template>
     <template #body>
+      <AlertDanger :message="errorMessage"/>
+      <AlertSuccess :message="successMessage"/>
       <div class="container text-end">
         <div class="row mb-3">
           <div class="col align-content-md-center">
@@ -19,7 +21,7 @@
             User name:
           </div>
           <div class="col">
-            <input v-model="username" type="text" class="form-control" id="username">
+            <input v-model="userInfo.username" type="text" class="form-control" id="username">
           </div>
         </div>
         <div class="row mb-3">
@@ -27,7 +29,7 @@
             E-mail:
           </div>
           <div class="col">
-            <input v-model="email" type="email" class="form-control" id="email">
+            <input v-model="userInfo.email" type="email" class="form-control" id="email">
           </div>
         </div>
         <div class="row mb-3">
@@ -35,7 +37,7 @@
             Password:
           </div>
           <div class="col">
-            <input v-model="password" type="password" class="form-control" id="password">
+            <input v-model="userInfo.password" type="password" class="form-control" id="password">
           </div>
         </div>
         <div class="row mb-3">
@@ -43,7 +45,7 @@
             Confirm password:
           </div>
           <div class="col">
-            <input v-model="passwordConfirmation" type="password" class="form-control" id="passwordConfirmation">
+            <input v-model="userInfo.passwordConfirmation" type="password" class="form-control" id="passwordConfirmation">
           </div>
         </div>
       </div>
@@ -61,22 +63,33 @@
 <script>
 import Modal from "@/components/modal/Modal.vue";
 import UserRoleDropdown from "@/components/dropdown/UserRoleDropdown.vue";
+import router from "@/router";
+import AlertDanger from "@/components/alert/AlertDanger.vue";
+import AlertSuccess from "@/components/alert/AlertSuccess.vue";
 
 export default {
   name: "UserInfoInputModal",
-  components: {UserRoleDropdown, Modal},
+  components: {AlertSuccess, AlertDanger, UserRoleDropdown, Modal},
   data() {
     return {
+      successMessage:'',
+      errorMessage:'',
+      message:'',
+
+      userInfo: {
+      roleName:'',
       username: '',
       email: '',
       password: '',
       passwordConfirmation: ''
+      }
     }
   },
   methods: {
     executeAddUser() {
       if (this.allFieldsHaveInput() && this.passwordInputConfirmed()) {
-        this.sendAddUserRequest()
+        this.sendPostUserRequest()
+        this.handlePostUserResponse()
       } else if (this.allFieldsHaveInput()) {
         this.displayPasswordEqualityAlert()
       } else {
@@ -84,27 +97,28 @@ export default {
       }
     },
 
+    sendPostUserRequest() {
+      this.$http.post("/users",this.userInfo)
+          .then(() => this.handlePostUserResponse())
+          .catch(error => {
+            this.errorResponse = error.response.data
+
+          })
+    },
+
       allFieldsHaveInput() {
-        return this.username.length > 0 &&
-            this.email.length > 0 &&
-            this.password.length > 0 &&
-            this.passwordConfirmation.length > 0
+        return this.userInfo.username !== '' &&
+            this.userInfo.email !== '' &&
+            this.userInfo.password !== '' &&
+            this.userInfo.passwordConfirmation !== ''
       },
 
     passwordInputConfirmed() {
-      if (this.password === this.passwordConfirmation) {
+      if (this.userInfo.password === this.userInfo.passwordConfirmation) {
         return true
       }
     },
 
-    sendAddUserRequest: function () {
-      this.$http.post("/users", this.somePayloadDtoObject
-      ).then(response => {
-        const responseBody = response.data
-      }).catch(error => {
-        const errorResponseBody = error.response.data
-      })
-    },
 
     displayAllFieldsRequiredAlert() {
       this.message = "Fill in all fields";
@@ -120,6 +134,11 @@ export default {
       this.message = ''
     },
 
+    handlePostUserResponse() {
+      this.successMessage = 'Uus Kasutaja "' + this.userInfo.username + '" lisatud süsteemi'
+      setTimeout(this.$refs.modalRef.closeModal, 3000)
+      setTimeout(this.resetMessage, 3000)
+    }
   }
 }
 </script>

@@ -6,7 +6,7 @@
     </template>
     <template #body>
       <div class="modal-body">
-        <div class="container-fluid">
+        <div class="container text-end">
           <div class="row mb-3 align-content-md-center">
             <AlertDanger :message="errorMessage" class="mb-3"/>
             <AlertSuccess :message="successMessage" class="mb-3"/>
