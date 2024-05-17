@@ -12,7 +12,15 @@
         <PlayerDropdown ref="playerDropdownRef" @event-selected-player-change="updatePlayerId"/>
       </div>
       <div class="col">
-        <PlayerSearchInput @event-player-search-name-enter="searchPlayer"/>
+
+        <select v-model="selectedPlayerId"
+                @change="emitPlayerObservations"
+                class="form-select">
+          <option selected :value="0">Year</option>
+          <option v-for="playerObservation in playerObservations" :value="selectedPlayerId.playerObservations" :key="playerObservation.playerObservationId">
+            {{playerObservation.playerObservationId}}
+          </option>
+        </select>
       </div>
       <div class="col">
         <button @click="openPlayerObservationModal" class="btn btn-primary custom-button" type="button">Add new observation</button>
@@ -61,7 +69,17 @@ export default {
     return {
       selectedPlayerId: Number(useRoute().query.playerId),
       errorMessage: '',
-      successMessage: ''
+      successMessage: '',
+
+      playerObservations: [
+        {
+          playerObservationId: 0,
+          date: '',
+          gameHomeClubName: '',
+          gameAwayClubName: '',
+          comment: ''
+        }
+      ]
 
     }
   },
@@ -81,8 +99,8 @@ export default {
       this.$refs.observationsTableRef.updateObservationsTable()
     },
 
-    searchPlayer(playerName) {
-
+    emitPlayerObservations() {
+      this.$emit('event-selected-observation-change' ,this.selectedPlayerId)
     },
 
     openPlayerObservationModal() {
